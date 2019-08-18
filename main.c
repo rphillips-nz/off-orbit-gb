@@ -4,7 +4,6 @@
 #include "sprite-data.c"
 #include "sound.c"
 #include "font.c"
-#include "window-map.c"
 
 #define UPDATE_FRACTION 2u
 #define MAX_VELOCITY 2
