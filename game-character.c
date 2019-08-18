@@ -2,6 +2,7 @@
 
 typedef struct GameCharacter {
 	UBYTE sprite_ids[4]; // character uses 4 sprites
+	UBYTE is_destroyed;
 	UINT8 direction;
 	UINT8 x;
 	UINT8 y;

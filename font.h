@@ -1,6 +1,6 @@
 /*
 
- SPRITE-DATA.H
+ FONT.H
 
  Include File.
 
@@ -10,7 +10,7 @@
   Compression          : None.
   Counter              : None.
   Tile size            : 8 x 8
-  Tiles                : 0 to 23
+  Tiles                : 0 to 37
 
   Palette colors       : None.
   SGB Palette          : None.
@@ -24,8 +24,8 @@
 
 
 /* Bank of tiles. */
-#define SpriteDataBank 0
+#define FontDataBank 0
 /* Start of tile array. */
-extern const unsigned char SpriteData[];
+extern unsigned char FontData[];
 
-/* End of SPRITE-DATA.H */
+/* End of FONT.H */
