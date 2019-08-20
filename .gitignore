@@ -1,4 +1,4 @@
-build/main.lst
-build/main.map
-build/main.o
-build/main.sym
+build/*.lst
+build/*.map
+build/*.o
+build/*.sym

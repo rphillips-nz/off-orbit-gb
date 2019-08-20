@@ -7,8 +7,6 @@ typedef struct GameCharacter {
 	UINT8 direction;
 	UINT8 x;
 	UINT8 y;
-	UINT8 old_x;
-	UINT8 old_y;
 	INT8 velocity_x;
 	INT8 velocity_y;
 	UINT8 width;
