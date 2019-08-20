@@ -103,6 +103,11 @@ void update_bullet(GameCharacter* bullet) {
 void update_enemy(GameCharacter* enemy) {
 	UINT8 distance_x, distance_y;
 
+	// if (sys_time % 60 == 0) {
+	// 	enemy->velocity_y += player.y < enemy->y ? -1 : 1;
+	// 	enemy->velocity_x += player.x < enemy->x ? -1 : 1;
+	// }
+
 	update_game_character(enemy);
 
 	distance_x = player.x > enemy->x ? player.x - enemy->x : enemy->x - player.x;
