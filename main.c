@@ -14,8 +14,9 @@
 #define SPRITE_SIZE 8u
 
 #define FIRE_RATE 15u
+#define ANIMATION_RATE 4u
 #define BULLET_COUNT 2u
-#define ENEMY_COUNT 4u
+#define ENEMY_COUNT 5u
 
 GameCharacter player;
 GameCharacter bullets[BULLET_COUNT];
@@ -56,9 +57,8 @@ void reset_enemy(GameCharacter* enemy) {
 		enemy->velocity_y = -rand_range(1, 2);
 	}
 
-	enemy->width = 16u;
-	enemy->height = 16u;
 	enemy->is_destroyed = 0;
+	enemy->frame = 0u;
 }
 
 void destroy_game_character(GameCharacter* character) {
@@ -69,11 +69,22 @@ void destroy_game_character(GameCharacter* character) {
 	character->velocity_y = 0;
 }
 
+void destroy_enemy(GameCharacter* enemy) {
+	enemy->frame = 0;
+	enemy->is_animating = 1u;
+	enemy->last_animated_at = sys_time;
+	enemy->velocity_x = 0;
+	enemy->velocity_y = 0;
+}
+
 void render_game_character(GameCharacter* character) {
 	move_sprite(character->sprite_ids[0u], character->x, character->y);
-	move_sprite(character->sprite_ids[1u], character->x + SPRITE_SIZE, character->y);
-	move_sprite(character->sprite_ids[2u], character->x, character->y + SPRITE_SIZE);
-	move_sprite(character->sprite_ids[3u], character->x + SPRITE_SIZE, character->y + SPRITE_SIZE);
+
+	if (character->sprite_ids_count > 1) {
+		move_sprite(character->sprite_ids[1u], character->x + SPRITE_SIZE, character->y);
+		move_sprite(character->sprite_ids[2u], character->x, character->y + SPRITE_SIZE);
+		move_sprite(character->sprite_ids[3u], character->x + SPRITE_SIZE, character->y + SPRITE_SIZE);
+	}
 }
 
 void update_game_character(GameCharacter* character) {
@@ -107,6 +118,72 @@ void update_enemy(GameCharacter* enemy) {
 	// 	enemy->velocity_y += player.y < enemy->y ? -1 : 1;
 	// 	enemy->velocity_x += player.x < enemy->x ? -1 : 1;
 	// }
+
+	if (enemy->is_animating && (sys_time - enemy->last_animated_at > ANIMATION_RATE)) {
+		enemy->frame++;
+		enemy->last_animated_at = sys_time;
+	}
+
+	if (enemy->sprite_ids_count == 1) {
+		switch (enemy->frame) {
+			case 0u:
+				set_sprite_tile(enemy->sprite_ids[0], enemy->is_alternate ? 24u : 25u);
+				break;
+			case 1u:
+				set_sprite_tile(enemy->sprite_ids[0], 40u);
+				break;
+			case 2u:
+				set_sprite_tile(enemy->sprite_ids[0], 41u);
+				break;
+			case 3u:
+				set_sprite_tile(enemy->sprite_ids[0], 42u);
+				break;
+			default:
+				enemy->frame = 0u;
+				enemy->is_animating = 0u;
+				destroy_game_character(enemy);
+				break;
+		}
+	} else {
+		switch (enemy->frame) {
+			case 0u:
+				if (enemy->is_alternate) {
+					set_sprite_tile(enemy->sprite_ids[0], 20u);
+					set_sprite_tile(enemy->sprite_ids[1], 21u);
+					set_sprite_tile(enemy->sprite_ids[2], 22u);
+					set_sprite_tile(enemy->sprite_ids[3], 23u);
+				} else {
+					set_sprite_tile(enemy->sprite_ids[0], 16u);
+					set_sprite_tile(enemy->sprite_ids[1], 17u);
+					set_sprite_tile(enemy->sprite_ids[2], 18u);
+					set_sprite_tile(enemy->sprite_ids[3], 19u);
+				}
+				break;
+			case 1u:
+				set_sprite_tile(enemy->sprite_ids[0], 28u);
+				set_sprite_tile(enemy->sprite_ids[1], 29u);
+				set_sprite_tile(enemy->sprite_ids[2], 30u);
+				set_sprite_tile(enemy->sprite_ids[3], 31u);
+				break;
+			case 2u:
+				set_sprite_tile(enemy->sprite_ids[0], 32u);
+				set_sprite_tile(enemy->sprite_ids[1], 33u);
+				set_sprite_tile(enemy->sprite_ids[2], 34u);
+				set_sprite_tile(enemy->sprite_ids[3], 35u);
+				break;
+			case 3u:
+				set_sprite_tile(enemy->sprite_ids[0], 36u);
+				set_sprite_tile(enemy->sprite_ids[1], 37u);
+				set_sprite_tile(enemy->sprite_ids[2], 38u);
+				set_sprite_tile(enemy->sprite_ids[3], 39u);
+				break;
+			default:
+				enemy->frame = 0u;
+				enemy->is_animating = 0u;
+				destroy_game_character(enemy);
+				break;
+		}
+	}
 
 	update_game_character(enemy);
 
@@ -188,6 +265,7 @@ void set_up_player() {
 	player.sprite_ids[2] = next_sprite_index++;
 	set_sprite_tile(next_sprite_index, 3u);
 	player.sprite_ids[3] = next_sprite_index++;
+	player.sprite_ids_count = 4;
 
 	render_game_character(&player);
 }
@@ -197,36 +275,70 @@ void set_up_bullet(GameCharacter* bullet) {
 	bullet->y = -16;
 	bullet->velocity_x = 0;
 	bullet->velocity_y = 0;
-	bullet->width = 16u;
-	bullet->height = 16u;
+	bullet->width = 8u;
+	bullet->height = 8u;
 	bullet->is_destroyed = 1;
 
-	set_sprite_tile(next_sprite_index, 20u);
+	set_sprite_tile(next_sprite_index, 26u);
 	bullet->sprite_ids[0] = next_sprite_index++;
-	set_sprite_tile(next_sprite_index, 21u);
-	bullet->sprite_ids[1] = next_sprite_index++;
-	set_sprite_tile(next_sprite_index, 22u);
-	bullet->sprite_ids[2] = next_sprite_index++;
-	set_sprite_tile(next_sprite_index, 23u);
-	bullet->sprite_ids[3] = next_sprite_index++;
+	bullet->sprite_ids_count = 1;
 }
 
-void set_up_enemy(GameCharacter* enemy) {
+void set_up_enemy(GameCharacter* enemy, UBYTE is_alternate) {
 	reset_enemy(enemy);
 
-	set_sprite_tile(next_sprite_index, 16u);
+	enemy->frame = 0u;
+	enemy->is_alternate = is_alternate;
+	enemy->is_animating = 0u;
+	enemy->width = 16u;
+	enemy->height = 16u;
+
+	if (is_alternate) {
+		set_sprite_tile(next_sprite_index, 20u);
+		enemy->sprite_ids[0] = next_sprite_index++;
+		set_sprite_tile(next_sprite_index, 21u);
+		enemy->sprite_ids[1] = next_sprite_index++;
+		set_sprite_tile(next_sprite_index, 22u);
+		enemy->sprite_ids[2] = next_sprite_index++;
+		set_sprite_tile(next_sprite_index, 23u);
+		enemy->sprite_ids[3] = next_sprite_index++;
+	} else {
+		set_sprite_tile(next_sprite_index, 16u);
+		enemy->sprite_ids[0] = next_sprite_index++;
+		set_sprite_tile(next_sprite_index, 17u);
+		enemy->sprite_ids[1] = next_sprite_index++;
+		set_sprite_tile(next_sprite_index, 18u);
+		enemy->sprite_ids[2] = next_sprite_index++;
+		set_sprite_tile(next_sprite_index, 19u);
+		enemy->sprite_ids[3] = next_sprite_index++;
+	}
+	
+	enemy->sprite_ids_count = 4;
+}
+
+void set_up_small_enemy(GameCharacter* enemy, UBYTE is_alternate) {
+	reset_enemy(enemy);
+
+	enemy->frame = 0u;
+	enemy->is_alternate = is_alternate;
+	enemy->is_animating = 0u;
+	enemy->width = 8u;
+	enemy->height = 8u;
+
+	if (is_alternate) {
+		set_sprite_tile(next_sprite_index, 24u);
+	} else {
+		set_sprite_tile(next_sprite_index, 25u);
+	}
+
 	enemy->sprite_ids[0] = next_sprite_index++;
-	set_sprite_tile(next_sprite_index, 17u);
-	enemy->sprite_ids[1] = next_sprite_index++;
-	set_sprite_tile(next_sprite_index, 18u);
-	enemy->sprite_ids[2] = next_sprite_index++;
-	set_sprite_tile(next_sprite_index, 19u);
-	enemy->sprite_ids[3] = next_sprite_index++;
+	enemy->sprite_ids_count = 1;
 }
 
 void fire_bullet(UINT8 direction) {
 	GameCharacter* bullet;
 	UBYTE i;
+	INT8 player_mid_x, player_mid_y;
 
 	for (i = 0u; i < BULLET_COUNT; i++) {
 		if (bullets[i].is_destroyed) {
@@ -297,8 +409,11 @@ void fire_bullet(UINT8 direction) {
 		bullet->velocity_y = 0;
 	}
 
-	bullet->x = player.x + bullet->velocity_x;
-	bullet->y = player.y + bullet->velocity_y;
+	player_mid_x = player.x + (player.width / 2);
+	player_mid_y = player.y + (player.height / 2);
+
+	bullet->x = player_mid_x - (bullet->width / 2) + bullet->velocity_x;
+	bullet->y = player_mid_y - (bullet->height / 2)+ bullet->velocity_y;
 	bullet->is_destroyed = 0;
 }
 
@@ -372,16 +487,19 @@ void main() {
 	set_bkg_tiles(0, 0, 40, 34, BackgroundMap);
 	update_score();
 
-	set_sprite_data(0u, 24u, SpriteData);
+	set_sprite_data(0u, 43u, SpriteData);
 	set_up_player();
 
 	for (i = 0u; i < BULLET_COUNT; i++) {
 		set_up_bullet(&bullets[i]);
 	}
 
-	for (i = 0u; i < ENEMY_COUNT; i++) {
-		set_up_enemy(&enemies[i]);
+	for (i = 0u; i < ENEMY_COUNT - 2; i++) {
+		set_up_enemy(&enemies[i], i % 2 == 0);
 	}
+
+	set_up_small_enemy(&enemies[ENEMY_COUNT - 2], 0);
+	set_up_small_enemy(&enemies[ENEMY_COUNT - 1], 1);
 
 	SHOW_SPRITES;
 	SHOW_BKG;
@@ -411,7 +529,7 @@ void main() {
 			for (j = 0u; j < ENEMY_COUNT; j++) {
 				if (check_collision(&bullets[i], &enemies[j])) {
 					destroy_game_character(&bullets[i]);
-					destroy_game_character(&enemies[j]);
+					destroy_enemy(&enemies[j]);
 					score += 1u;
 					update_score();
 					break;
@@ -426,14 +544,14 @@ void main() {
 
 			update_enemy(&enemies[i]);
 
+			if (check_collision(&player, &enemies[i])) {
+				resolve_collision(&enemies[i], &player);
+			}
+
 			for (j = 0u; j < ENEMY_COUNT; j++) {
 				if (i != j && check_collision(&enemies[i], &enemies[j])) {
 					resolve_collision(&enemies[i], &enemies[j]);
 				}
-			}
-
-			if (check_collision(&player, &enemies[i])) {
-				resolve_collision(&enemies[i], &player);
 			}
 		}
 

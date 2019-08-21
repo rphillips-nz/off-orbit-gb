@@ -1,9 +1,13 @@
 #include <gb/gb.h>
 
 typedef struct GameCharacter {
-	UBYTE sprite_ids[4]; // character uses 4 sprites
+	UBYTE sprite_ids[4];
+	UBYTE sprite_ids_count;
+	UBYTE is_alternate;
 	UBYTE is_destroyed;
-	UBYTE did_collide;
+	UBYTE is_animating;
+	UBYTE frame;
+	UINT16 last_animated_at;
 	UINT8 direction;
 	UINT8 x;
 	UINT8 y;
