@@ -1,4 +1,1 @@
-build/*.lst
-build/*.map
-build/*.o
-build/*.sym
+build/

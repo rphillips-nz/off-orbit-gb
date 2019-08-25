@@ -15,4 +15,6 @@ typedef struct GameCharacter {
 	INT8 velocity_y;
 	UINT8 width;
 	UINT8 height;
+	UINT8 half_width; // saves calculating this all the time
+	UINT8 half_height; // saves calculating this all the time
 } GameCharacter;
