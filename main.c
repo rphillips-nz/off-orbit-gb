@@ -127,11 +127,6 @@ void update_bullet(GameCharacter* bullet) {
 }
 
 void update_enemy(GameCharacter* enemy) {
-	// if (sys_time % 60 == 0) {
-	// 	enemy->velocity_y += player.y < enemy->y ? -1 : 1;
-	// 	enemy->velocity_x += player.x < enemy->x ? -1 : 1;
-	// }
-
 	if (enemy->is_animating && (sys_time - enemy->last_animated_at > ANIMATION_RATE)) {
 		enemy->frame++;
 		enemy->last_animated_at = sys_time;
@@ -209,8 +204,8 @@ UBYTE did_collide(GameCharacter* a, GameCharacter* b) {
 	return !(
 		(a->y + a->height) < b->y || // a_bottom < b_top
 		a->y > (b->y + b->height) || // a_top > b_bottom
-		(a->x + a->width) < b->x || // a_right < b_left
-		a->x > (b->x + b->width)    // a_left > b_right
+		(a->x + a->width) < b->x ||  // a_right < b_left
+		a->x > (b->x + b->width)     // a_left > b_right
 	);
 }
 
@@ -225,6 +220,8 @@ void set_up_player() {
 	player.half_width = 8u;
 	player.half_height = 8u;
 	player.is_destroyed = 0u;
+	player.frame = 0u;
+	player.is_animating = 0u;
 
 	set_sprite_tile(next_sprite_index, 0u);
 	player.sprite_ids[0u] = next_sprite_index++;
@@ -434,6 +431,63 @@ void turn_player(UINT8 jpad) {
 	}
 }
 
+void destroy_player() {
+	game_running = 0u;
+	player.is_destroyed = 1u;
+	player.is_animating = 0u;
+	player.frame = 0u;
+	player.x = 0u;
+	player.y = 0u;
+	render_game_character(&player);
+	player.x = 80u;
+	player.y = 80u;
+	set_win_tiles(0u, 0u, 11u, 1u, reset_prompt_map);
+}
+
+void start_destroying_player() {
+	player.is_animating = 1u;
+}
+
+void update_player(UINT8 jpad) {
+	if (player.is_animating && (sys_time - player.last_animated_at > ANIMATION_RATE)) {
+		player.frame++;
+		player.last_animated_at = sys_time;
+	}
+
+	switch (player.frame) {
+		case 0u:
+			turn_player(jpad);
+			break;
+		case 1u:
+			set_sprite_tile(player.sprite_ids[0], 44u);
+			set_sprite_tile(player.sprite_ids[1], 45u);
+			set_sprite_tile(player.sprite_ids[2], 46u);
+			set_sprite_tile(player.sprite_ids[3], 47u);
+			break;
+		case 2u:
+			set_sprite_tile(player.sprite_ids[0], 48u);
+			set_sprite_tile(player.sprite_ids[1], 49u);
+			set_sprite_tile(player.sprite_ids[2], 50u);
+			set_sprite_tile(player.sprite_ids[3], 51u);
+			break;
+		case 3u:
+			set_sprite_tile(player.sprite_ids[0], 52u);
+			set_sprite_tile(player.sprite_ids[1], 53u);
+			set_sprite_tile(player.sprite_ids[2], 54u);
+			set_sprite_tile(player.sprite_ids[3], 55u);
+			break;
+		case 4u:
+			set_sprite_tile(player.sprite_ids[0], 56u);
+			set_sprite_tile(player.sprite_ids[1], 57u);
+			set_sprite_tile(player.sprite_ids[2], 58u);
+			set_sprite_tile(player.sprite_ids[3], 59u);
+			break;
+		default:
+			destroy_player();
+			break;
+	}
+}
+
 void reset_game() {
 	UBYTE i;
 
@@ -477,7 +531,7 @@ void main() {
 
 	set_bkg_tiles(0, 0, 40, 34, BackgroundMap);
 
-	set_sprite_data(0u, 43u, SpriteData);
+	set_sprite_data(0u, 60u, SpriteData);
 	set_up_player();
 
 	for (i = 0u; i < BULLET_COUNT; i++) {
@@ -506,17 +560,17 @@ void main() {
 		wait_vbl_done();
 
 		jpad = joypad();
+		update_player(jpad);
 
 		if (game_running) {
-			turn_player(jpad);
-
-			if (jpad & J_A) {
+			if (!player.is_animating && (jpad & J_A)) {
 				fire_bullet(player.direction);
 			}
 		} else if (jpad & J_START) {
 			reset_game();
 			continue;
 		}
+
 
 		for (i = 0u; i < BULLET_COUNT; i++) {
 			if (!bullets[i].is_destroyed) {
@@ -549,14 +603,7 @@ void main() {
 				destroy_enemy(&enemies[i]);
 
 				if (health == 0u) {
-					game_running = 0u;
-					player.is_destroyed = 1u;
-					player.x = 0u;
-					player.y = 0u;
-					render_game_character(&player);
-					player.x = 80u;
-					player.y = 80u;
-					set_win_tiles(0u, 0u, 11u, 1u, reset_prompt_map);
+					start_destroying_player();
 				}
 			}
 		}

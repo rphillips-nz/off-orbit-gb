@@ -26,6 +26,6 @@
 /* Bank of tiles. */
 #define FontDataBank 0
 /* Start of tile array. */
-extern unsigned char FontData[];
+extern const unsigned char FontData[];
 
 /* End of FONT.H */
