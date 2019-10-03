@@ -1,5 +1,6 @@
 #include <gb/gb.h>
 #include "game-character.c"
+#include "fade.c"
 #include "sprite-data.c"
 #include "sound.c"
 #include "font.c"
@@ -30,8 +31,8 @@
 #define FIRE_RATE 20u
 #define ANIMATION_RATE 4u
 #define BULLET_COUNT 2u
-#define ENEMY_COUNT 6u
-#define SMALL_ENEMY_COUNT 3u
+#define ENEMY_COUNT 5u
+#define SMALL_ENEMY_COUNT 2u
 
 
 #define ABS(x)    (((x) < 0) ? -(x) : (x))
@@ -517,6 +518,7 @@ void reset_game() {
 
 void main() {
 	UINT8 jpad = 0u, j, i;
+	BGP_REG = 0x00; // Start palette all white for fade_in_white()
 
 	disable_interrupts();
 
@@ -533,7 +535,7 @@ void main() {
 	}
 
 	set_bkg_tiles(0, 0, 20u, 19u, TitleMap);
-	set_win_tiles(0u, 0u, 11u, 1u, reset_prompt_map); // TODO refactor since this is duplicate call
+	set_win_tiles(0u, 0u, 11u, 1u, reset_prompt_map);
 	move_win(43u, 108u);
 
 	SHOW_BKG;
@@ -541,12 +543,15 @@ void main() {
 	DISPLAY_ON;
 
 	enable_interrupts();
+
+	fade_in_white();
 	waitpad(J_START);
+	fade_out_white();
 
 	disable_interrupts();
+
 	move_win(7u, 136u);
 	set_bkg_tiles(0, 0, 40u, 34u, BackgroundMap);
-
 	set_sprite_data(0u, 60u, SpriteData);
 	set_up_player();
 
@@ -568,6 +573,8 @@ void main() {
 
 	enable_interrupts();
 
+	fade_in_white();
+
 	while (1) {
 		wait_vbl_done();
 		wait_vbl_done();
@@ -583,7 +590,6 @@ void main() {
 			reset_game();
 			continue;
 		}
-
 
 		for (i = 0u; i < BULLET_COUNT; i++) {
 			if (!bullets[i].is_destroyed) {
