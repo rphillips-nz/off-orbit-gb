@@ -5,6 +5,8 @@
 #include "font.c"
 #include "background-data.c"
 #include "background-map.c"
+#include "title-data.c"
+#include "title-map.c"
 
 // Top corner of the screen is actually (8, 16) rather than (0, 0)
 #define SCREEN_MIN_X 8u
@@ -518,8 +520,9 @@ void main() {
 
 	disable_interrupts();
 
-	set_win_data(6u, 36u, FontData);
+	set_win_data(6u, 37u, FontData);
 	set_bkg_data(0u, 7u, BackgroundData);
+	set_bkg_data(43u, 23u, TitleData);
 	move_win(7u, 136u);
 
 	for (j = 0u; j < 32u; j++) {
@@ -529,7 +532,20 @@ void main() {
 		}
 	}
 
-	set_bkg_tiles(0, 0, 40, 34, BackgroundMap);
+	set_bkg_tiles(0, 0, 20u, 19u, TitleMap);
+	set_win_tiles(0u, 0u, 11u, 1u, reset_prompt_map); // TODO refactor since this is duplicate call
+	move_win(43u, 108u);
+
+	SHOW_BKG;
+	SHOW_WIN;
+	DISPLAY_ON;
+
+	enable_interrupts();
+	waitpad(J_START);
+
+	disable_interrupts();
+	move_win(7u, 136u);
+	set_bkg_tiles(0, 0, 40u, 34u, BackgroundMap);
 
 	set_sprite_data(0u, 60u, SpriteData);
 	set_up_player();
@@ -549,9 +565,6 @@ void main() {
 	reset_game();
 
 	SHOW_SPRITES;
-	SHOW_BKG;
-	SHOW_WIN;
-	DISPLAY_ON;
 
 	enable_interrupts();
 
