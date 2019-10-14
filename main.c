@@ -373,6 +373,8 @@ void fire_bullet(UINT8 direction) {
 	bullet->x = player_mid_x - bullet->half_width + bullet->velocity_x;
 	bullet->y = player_mid_y - bullet->half_height + bullet->velocity_y;
 	bullet->is_destroyed = 0u;
+
+	play_sound_fire_bullet();
 }
 
 void update_score() {
@@ -520,6 +522,7 @@ void main() {
 	UINT8 jpad = 0u, j, i;
 	BGP_REG = 0x00; // Start palette all white for fade_in_white()
 
+	init_sound();
 	disable_interrupts();
 
 	set_win_data(6u, 37u, FontData);
@@ -599,6 +602,7 @@ void main() {
 					if (did_collide(&bullets[i], &enemies[j])) {
 						destroy_game_character(&bullets[i]);
 						destroy_enemy(&enemies[j]);
+						play_sound_explosion();
 						score += 1u;
 						update_score();
 						break;
@@ -620,6 +624,7 @@ void main() {
 				health--;
 				update_health();
 				destroy_enemy(&enemies[i]);
+				play_sound_explosion();
 
 				if (health == 0u) {
 					start_destroying_player();

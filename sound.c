@@ -1,5 +1,35 @@
 #include <gb/gb.h>
 
+void init_sound() {
+	// This line order for these registers is required
+	NR52_REG = 0x80; // This is 1000 0000 in binary and turns on sound
+	NR50_REG = 0x77; // Sets the volume for both left and right channel (set to max 0x77)
+	NR51_REG = 0xFF; // This is 1111 1111 in binary, selects which channels we want to use (all of them in this case). Frou channels: pairs of bits - one bit for the L, one bit for the R
+}
+
+void play_sound_fire_bullet() {
+	NR10_REG = 0x1E;
+	NR11_REG = 0xC5;
+	NR12_REG = 0x44;
+	NR13_REG = 0x06;
+	NR14_REG = 0x87;
+}
+
+void play_sound_power_up() {
+	NR10_REG = 0x34;
+	NR11_REG = 0x80;
+	NR12_REG = 0x5B;
+	NR13_REG = 0xB0;
+	NR14_REG = 0x84;
+}
+
+void play_sound_explosion() {
+	NR41_REG = 0x07;
+	NR42_REG = 0xA2;
+	NR43_REG = 0x7A;
+	NR44_REG = 0x80;
+}
+
 void play_sound() {
 	// This line order for these registers is required
 	NR52_REG = 0x80; // This is 1000 0000 in binary and turns on sound
