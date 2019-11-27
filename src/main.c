@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include "gbt_player.h"
 #include "game-character.c"
 #include "fade.c"
 #include "sprite-data.c"
@@ -8,6 +9,8 @@
 #include "background-map.c"
 #include "title-data.c"
 #include "title-map.c"
+
+extern const unsigned char* song_Data[];
 
 // Top corner of the screen is actually (8, 16) rather than (0, 0)
 #define SCREEN_MIN_X 8u
@@ -25,13 +28,12 @@
 
 #define MAX_VELOCITY 4
 #define ACCELERATION 1
-#define SPRITE_SIZE 8u
 
 #define MAX_HEALTH 3u
 #define FIRE_RATE 20u
 #define ANIMATION_RATE 4u
 #define BULLET_COUNT 2u
-#define ENEMY_COUNT 5u
+#define ENEMY_COUNT 6u
 #define SMALL_ENEMY_COUNT 2u
 
 
@@ -52,7 +54,7 @@ UINT16 time_last_fired;
 
 const UINT8 reset_prompt_map[11u] = {32u, 34u, 21u, 35u, 35u, 0u, 35u, 36u, 17u, 34u, 36u}; // "PRESS START"
 const UINT8 heart_map[1u] = {6u}; // The heart tile
-const UINT8 blank_map[] = {0u};
+const UINT8 blank_map[1u] = {0u};
 
 void reset_enemy(GameCharacter* enemy) {
 	switch (RANDOM_SIDE) {
@@ -86,16 +88,6 @@ void reset_enemy(GameCharacter* enemy) {
 	enemy->frame = 0u;
 }
 
-void destroy_game_character(GameCharacter* character) {
-	character->is_destroyed = 1u;
-	character->x = 0u;
-	character->y = 0u;
-	character->velocity_x = 0;
-	character->velocity_y = 0;
-	character->frame = 0u;
-	character->is_animating = 0u;
-}
-
 void destroy_enemy(GameCharacter* enemy) {
 	enemy->frame = 0u;
 	enemy->is_animating = 1u;
@@ -104,25 +96,8 @@ void destroy_enemy(GameCharacter* enemy) {
 	enemy->velocity_y = 0;
 }
 
-void render_game_character(GameCharacter* character) {
-	move_sprite(character->sprite_ids[0u], character->x, character->y);
-
-	if (character->sprite_ids_count > 1u) {
-		move_sprite(character->sprite_ids[1u], character->x + SPRITE_SIZE, character->y);
-		move_sprite(character->sprite_ids[2u], character->x, character->y + SPRITE_SIZE);
-		move_sprite(character->sprite_ids[3u], character->x + SPRITE_SIZE, character->y + SPRITE_SIZE);
-	}
-}
-
-void update_game_character(GameCharacter* character) {
-	character->x -= player.velocity_x;
-	character->y -= player.velocity_y;
-	character->x += character->velocity_x;
-	character->y += character->velocity_y;
-}
-
 void update_bullet(GameCharacter* bullet) {
-	update_game_character(bullet);
+	update_game_character(bullet, &player);
 
 	if (bullet->x > WORLD_MAX_X || bullet->y > WORLD_MAX_Y) { // No need to check MIN since it wraps around
 		destroy_game_character(bullet);
@@ -192,7 +167,7 @@ void update_enemy(GameCharacter* enemy) {
 		}
 	}
 
-	update_game_character(enemy);
+	update_game_character(enemy, &player);
 
 	if (enemy->x > WORLD_MAX_X || enemy->y > WORLD_MAX_Y) {
 		destroy_game_character(enemy);
@@ -382,10 +357,6 @@ void update_score() {
 	UBYTE score_iterator = score;
 	INT8 digit_render_count = 0u;
 
-	// if (time > sessionhighscore) {
-	// 	sessionhighscore = time;
-	// }
-
 	do {
 		digit_map[0u] = score_iterator % 10u + 7u; // + the win data offset where the digits start
 		set_win_tiles(19u - digit_render_count, 0u, 1u, 1u, digit_map);
@@ -519,7 +490,9 @@ void reset_game() {
 }
 
 void main() {
+	UBYTE is_render_frame = 0;
 	UINT8 jpad = 0u, j, i;
+
 	BGP_REG = 0x00; // Start palette all white for fade_in_white()
 
 	init_sound();
@@ -545,12 +518,26 @@ void main() {
 	SHOW_WIN;
 	DISPLAY_ON;
 
+	gbt_play(song_Data, 2, 7);
+	gbt_loop(1);
+
+	set_interrupts(VBL_IFLAG);
+
 	enable_interrupts();
-
 	fade_in_white();
-	waitpad(J_START);
-	fade_out_white();
 
+	while (1) {
+		wait_vbl_done();
+		gbt_update();
+
+		if (joypad() & J_START) {
+			break;
+		}
+	}
+
+	gbt_pause(1);
+	init_sound();
+	fade_out_white();
 	disable_interrupts();
 
 	move_win(7u, 136u);
@@ -580,66 +567,81 @@ void main() {
 
 	while (1) {
 		wait_vbl_done();
-		wait_vbl_done();
 
 		jpad = joypad();
-		update_player(jpad);
+		is_render_frame = !is_render_frame;
 
-		if (game_running) {
-			if (!player.is_animating && (jpad & J_A)) {
-				fire_bullet(player.direction);
-			}
-		} else if (jpad & J_START) {
-			reset_game();
-			continue;
-		}
+		if (is_render_frame) {
+			update_player(jpad);
 
-		for (i = 0u; i < BULLET_COUNT; i++) {
-			if (!bullets[i].is_destroyed) {
-				update_bullet(&bullets[i]);
-
-				for (j = 0u; j < ENEMY_COUNT; j++) {
-					if (did_collide(&bullets[i], &enemies[j])) {
-						destroy_game_character(&bullets[i]);
-						destroy_enemy(&enemies[j]);
-						play_sound_explosion();
-						score += 1u;
-						update_score();
-						break;
-					}
+			if (game_running) {
+				if (!player.is_animating && (jpad & J_A)) {
+					fire_bullet(player.direction);
 				}
-			}
-
-			render_game_character(&bullets[i]);
-		}
-
-		for (i = 0u; i < ENEMY_COUNT; i++) {
-			if (enemies[i].is_destroyed) {
+			} else if (jpad & J_START) {
+				reset_game();
 				continue;
 			}
 
-			update_enemy(&enemies[i]);
+			for (i = 0u; i < BULLET_COUNT; i++) {
+				if (!bullets[i].is_destroyed) {
+					update_bullet(&bullets[i]);
+				}
 
-			if (did_collide(&player, &enemies[i])) {
-				health--;
-				update_health();
-				destroy_enemy(&enemies[i]);
-				play_sound_explosion();
+				render_game_character(&bullets[i]);
+			}
 
-				if (health == 0u) {
-					start_destroying_player();
+			for (i = 0u; i < ENEMY_COUNT; i++) {
+				if (enemies[i].is_destroyed) {
+					continue;
+				}
+
+				update_enemy(&enemies[i]);
+			}
+
+			scroll_bkg(player.velocity_x, player.velocity_y);
+
+			for (i = 0u; i < ENEMY_COUNT; i++) {
+				if (enemies[i].is_destroyed) {
+					reset_enemy(&enemies[i]);
+				}
+
+				render_game_character(&enemies[i]);
+			}
+		} else {
+			for (i = 0u; i < ENEMY_COUNT; i++) {
+				if (enemies[i].is_destroyed) {
+					continue;
+				}
+
+				for (j = 0u; j < BULLET_COUNT; j++) {
+					if (!bullets[j].is_destroyed) {
+						if (did_collide(&bullets[j], &enemies[i])) {
+							destroy_game_character(&bullets[j]);
+							destroy_enemy(&enemies[i]);
+							play_sound_explosion();
+							score += 1u;
+							update_score();
+							break;
+						}
+					}
+				}
+
+				if (did_collide(&player, &enemies[i])) {
+					health--;
+					update_health();
+					destroy_enemy(&enemies[i]);
+					play_sound_explosion();
+
+					if (health == 0u) {
+						start_destroying_player();
+					}
+				}
+
+				if (enemies[i].is_destroyed) {
+					reset_enemy(&enemies[i]);
 				}
 			}
-		}
-
-		scroll_bkg(player.velocity_x, player.velocity_y);
-
-		for (i = 0u; i < ENEMY_COUNT; i++) {
-			if (enemies[i].is_destroyed) {
-				reset_enemy(&enemies[i]);
-			}
-
-			render_game_character(&enemies[i]);
 		}
 	}
 }
