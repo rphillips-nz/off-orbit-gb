@@ -36,6 +36,8 @@ extern const unsigned char* song_Data[];
 #define ENEMY_COUNT 6u
 #define SMALL_ENEMY_COUNT 2u
 
+#define BACKGROUND_DATA_TILES 12u
+#define FONT_DATA_TILES 37u
 
 #define ABS(x)    (((x) < 0) ? -(x) : (x))
 #define MAX(a, b) ((a < b) ? (b) : (a))
@@ -52,8 +54,21 @@ UBYTE health;
 
 UINT16 time_last_fired;
 
-const UINT8 reset_prompt_map[11u] = {32u, 34u, 21u, 35u, 35u, 0u, 35u, 36u, 17u, 34u, 36u}; // "PRESS START"
-const UINT8 heart_map[1u] = {6u}; // The heart tile
+const UINT8 reset_prompt_map[11u] = {
+	BACKGROUND_DATA_TILES + 26u, // P
+	BACKGROUND_DATA_TILES + 28u, // R
+	BACKGROUND_DATA_TILES + 15u, // E
+	BACKGROUND_DATA_TILES + 29u, // S
+	BACKGROUND_DATA_TILES + 29u, // S
+	0u,
+	BACKGROUND_DATA_TILES + 29u, // S
+	BACKGROUND_DATA_TILES + 30u, // T
+	BACKGROUND_DATA_TILES + 11u, // A
+	BACKGROUND_DATA_TILES + 28u, // R
+	BACKGROUND_DATA_TILES + 30u  // T
+};
+
+const UINT8 heart_map[1u] = {BACKGROUND_DATA_TILES}; // The heart tile
 const UINT8 blank_map[1u] = {0u};
 
 void reset_enemy(GameCharacter* enemy) {
@@ -86,14 +101,18 @@ void reset_enemy(GameCharacter* enemy) {
 
 	enemy->is_destroyed = 0u;
 	enemy->frame = 0u;
+
+	// Prevents asteroids getting stuck at same speed on end screen
+	if (player.is_destroyed || player.is_animating) {
+		enemy->velocity_x += player.velocity_x;
+		enemy->velocity_y += player.velocity_y;
+	}
 }
 
 void destroy_enemy(GameCharacter* enemy) {
 	enemy->frame = 0u;
 	enemy->is_animating = 1u;
 	enemy->last_animated_at = sys_time;
-	enemy->velocity_x = 0;
-	enemy->velocity_y = 0;
 }
 
 void update_bullet(GameCharacter* bullet) {
@@ -358,7 +377,7 @@ void update_score() {
 	INT8 digit_render_count = 0u;
 
 	do {
-		digit_map[0u] = score_iterator % 10u + 7u; // + the win data offset where the digits start
+		digit_map[0u] = score_iterator % 10u + BACKGROUND_DATA_TILES + 1u;
 		set_win_tiles(19u - digit_render_count, 0u, 1u, 1u, digit_map);
 		digit_render_count++;
 		score_iterator /= 10u;
@@ -498,9 +517,9 @@ void main() {
 	init_sound();
 	disable_interrupts();
 
-	set_win_data(6u, 37u, FontData);
-	set_bkg_data(0u, 7u, BackgroundData);
-	set_bkg_data(43u, 23u, TitleData);
+	set_win_data(BACKGROUND_DATA_TILES, FONT_DATA_TILES, FontData);
+	set_bkg_data(0u, BACKGROUND_DATA_TILES + 1, BackgroundData);
+	set_bkg_data(FONT_DATA_TILES + BACKGROUND_DATA_TILES, 23u, TitleData);
 	move_win(7u, 136u);
 
 	for (j = 0u; j < 32u; j++) {
@@ -528,20 +547,23 @@ void main() {
 
 	while (1) {
 		wait_vbl_done();
-		gbt_update();
 
 		if (joypad() & J_START) {
+			gbt_stop();
+			wait_vbl_done();
 			break;
 		}
+		
+		gbt_update();
 	}
 
-	gbt_pause(1);
 	init_sound();
 	fade_out_white();
+
 	disable_interrupts();
 
 	move_win(7u, 136u);
-	set_bkg_tiles(0, 0, 40u, 34u, BackgroundMap);
+	set_bkg_tiles(0, 0, 32u, 32u, BackgroundMap);
 	set_sprite_data(0u, 60u, SpriteData);
 	set_up_player();
 

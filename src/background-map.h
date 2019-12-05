@@ -7,7 +7,7 @@
  Info:
    Section       : 
    Bank          : 0
-   Map size      : 39 x 34
+   Map size      : 32 x 32
    Tile set      : D:\workspace\off-orbit-gb\raw\background.gbr
    Plane count   : 1 plane (8 bits)
    Plane order   : Tiles are continues
@@ -18,8 +18,8 @@
 
 */
 
-#define BackgroundMapWidth 39
-#define BackgroundMapHeight 34
+#define BackgroundMapWidth 32
+#define BackgroundMapHeight 32
 #define BackgroundMapBank 0
 
 extern const unsigned char BackgroundMap[];
