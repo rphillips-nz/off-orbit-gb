@@ -1,26 +1,13 @@
 #include <gb/gb.h>
+#include "semi-random.h"
 
-#define RANDOM_SIDES_COUNT 4
-#define RANDOM_FLIPS_COUNT 2
-#define RANDOM_VELOCITIES_COUNT 100
-#define RANDOM_WORLD_X_COUNT 45
-#define RANDOM_WORLD_Y_COUNT 43
-
-#define RANDOM_SIDE (random_sides[++random_sides_index % RANDOM_SIDES_COUNT])
-#define RANDOM_FLIP (random_flips[++random_flips_index % RANDOM_FLIPS_COUNT])
-#define RANDOM_VELOCITY (random_velocities[++random_velocities_index % RANDOM_VELOCITIES_COUNT])
-#define RANDOM_POSITIVE_VELOCITY (random_positive_velocities[++random_positive_velocities_index % RANDOM_VELOCITIES_COUNT])
-#define RANDOM_NEGATIVE_VELOCITY (random_negative_velocities[++random_negative_velocities_index % RANDOM_VELOCITIES_COUNT])
-#define RANDOM_WORLD_X (random_world_x[++random_world_x_index % RANDOM_WORLD_X_COUNT])
-#define RANDOM_WORLD_Y (random_world_y[++random_world_y_index % RANDOM_WORLD_Y_COUNT])
-
-const UINT8 random_sides[RANDOM_SIDES_COUNT] = {0, 1, 2, 3};
-const UINT8 random_flips[RANDOM_FLIPS_COUNT] = {0, 1};
+const UINT8 random_sides[RANDOM_SIDES_COUNT] = {0u, 1u, 2u, 3u};
+const UINT8 random_flips[RANDOM_FLIPS_COUNT] = {0u, 1u};
 const INT8 random_velocities[RANDOM_VELOCITIES_COUNT] = {-1, 1, -1, -1, 1, 2, -2, -2, -2, 2, 2, 2, -2, 2, 2, 2, -1, -1, -2, 2, -1, 1, -1, -2, 1, -1, -2, 1, 2, -1, -1, 1, -2, 1, 2, 1, 2, 2, 2, -1, 2, 2, -2, 1, 2, 1, 2, 2, 1, 1, 1, -2, 1, -2, 1, -2, 2, -2, 2, -2, -2, 1, 1, -2, -1, 1, -2, 1, -2, -1, -2, 2, 1, 2, 1, -1, -1, 1, -2, 2, 1, 1, 1, 2, 2, -2, 2, -1, -1, 2, 1, -2, 1, -1, -1, 2, -1, 2, 2, 2};
 const INT8 random_positive_velocities[RANDOM_VELOCITIES_COUNT] = {1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 1, 2, 2, 1, 1, 1, 2, 1, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 2, 1, 2, 1, 2, 2, 1, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 2, 2, 2};
 const INT8 random_negative_velocities[RANDOM_VELOCITIES_COUNT] = {-1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -1, -1, -2, -2, -1, -1, -1, -2, -1, -1, -2, -1, -2, -1, -1, -1, -2, -1, -2, -1, -2, -2, -2, -1, -2, -2, -2, -1, -2, -1, -2, -2, -1, -1, -1, -2, -1, -2, -1, -2, -2, -2, -2, -2, -2, -1, -1, -2, -1, -1, -2, -1, -2, -1, -2, -2, -1, -2, -1, -1, -1, -1, -2, -2, -1, -1, -1, -2, -2, -2, -2, -1, -1, -2, -1, -2, -1, -1, -1, -2, -1, -2, -2, -2};
-const UINT8 random_world_x[RANDOM_WORLD_X_COUNT] = {108, 176, 64, 56, 0, 148, 136, 140, 84, 60, 16, 112, 152, 44, 28, 156, 68, 172, 144, 80, 164, 20, 36, 76, 32, 88, 24, 100, 104, 8, 120, 116, 40, 160, 4, 92, 96, 128, 168, 12, 132, 48, 72, 52, 124};
-const UINT8 random_world_y[RANDOM_WORLD_Y_COUNT] = {120, 92, 164, 4, 80, 76, 20, 44, 148, 12, 168, 48, 136, 68, 128, 104, 72, 100, 144, 56, 32, 160, 124, 88, 8, 156, 16, 108, 28, 60, 112, 152, 36, 0, 64, 40, 132, 52, 24, 96, 84, 140, 116};
+const UINT8 random_world_x[RANDOM_WORLD_X_COUNT] = {108u, 176u, 64u, 56u, 0u, 148u, 136u, 140u, 84u, 60u, 16u, 112u, 152u, 44u, 28u, 156u, 68u, 172u, 144u, 80u, 164u, 20u, 36u, 76u, 32u, 88u, 24u, 100u, 104u, 8u, 120u, 116u, 40u, 160u, 4u, 92u, 96u, 128u, 168u, 12u, 132u, 48u, 72u, 52u, 124u};
+const UINT8 random_world_y[RANDOM_WORLD_Y_COUNT] = {120u, 92u, 164u, 4u, 80u, 76u, 20u, 44u, 148u, 12u, 168u, 48u, 136u, 68u, 128u, 104u, 72u, 100u, 144u, 56u, 32u, 160u, 124u, 88u, 8u, 156u, 16u, 108u, 28u, 60u, 112u, 152u, 36u, 0u, 64u, 40u, 132u, 52u, 24u, 96u, 84u, 140u, 116u};
 
 UINT8 random_sides_index;
 UINT8 random_flips_index;

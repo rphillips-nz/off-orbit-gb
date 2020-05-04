@@ -26,8 +26,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _GBT_PLAYER_
-#define _GBT_PLAYER_
+#ifndef _OO_GBT_PLAYER_
+#define _OO_GBT_PLAYER_
 
 #include <gb/gb.h>
 

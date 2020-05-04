@@ -6,7 +6,7 @@ Off Orbit reborn for the original Nintendo Gameboy. An asteroids style game wher
 
 ## Development Prerequisites
 
-This game is built on Windows with [GBDK](http://gbdk.sourceforge.net/install.html) or [gbdk-n](https://github.com/andreasjhkarlsson/gbdk-n). gbdk-n seems to make a build that runs smoother.
+This game is built on Windows with [GBDK](http://gbdk.sourceforge.net/install.html) *or* [gbdk-n](https://github.com/andreasjhkarlsson/gbdk-n). gbdk-n seems to make a build that runs smoother.
 
 > [This tutorial series](https://www.youtube.com/watch?v=HIsWR_jLdwo) created by [GamingMonsters](https://www.youtube.com/channel/UCMMhSfBStEti-Lqzs30HYWw) is a good learning resource for GBDK/gbdk-n.
 
