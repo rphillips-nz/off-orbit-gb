@@ -25,11 +25,11 @@ This game is built on Windows with [GBDK](http://gbdk.sourceforge.net/install.ht
 
 ### Other Tools
 
-* BGB emulator for testing the built `off-orbit.gb` file
+* [BGB](https://bgb.bircd.org/) emulator for testing the built `off-orbit.gb` file
 * [GBTD](http://www.devrs.com/gb/hmgd/gbtd.html) for creating tiles and exporting the data to `.c` files
 * [GBMB](http://www.devrs.com/gb/hmgd/gbmb.html) for creating tilemaps and exporting them to `.c` files
 * [OpenMPT](https://openmpt.org/download) for creating the music in `raw/music.mod`
-* [Pyxel Edit](https://pyxeledit.com/) to edit composed sprites easier (split pasted into GBTD).
+* [Pyxel Edit](https://pyxeledit.com/) to edit composed sprites easier (split pasted into GBTD)
 
 
 
