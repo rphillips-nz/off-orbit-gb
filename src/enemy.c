@@ -157,6 +157,7 @@ void reset_enemy(GameCharacter* enemy) {
 			break;
 	}
 
+	enemy->last_collided_with = 0;
 	enemy->is_destroyed = 0u;
 	enemy->frame = 0u;
 	enemy->is_destroying = 0u;

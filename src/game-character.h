@@ -22,6 +22,7 @@ typedef struct GameCharacter {
 	UINT8 height;
 	UINT8 half_width; // saves calculating this all the time
 	UINT8 half_height; // saves calculating this all the time
+	struct GameCharacter* last_collided_with;
 } GameCharacter;
 
 void destroy_game_character(GameCharacter* character);

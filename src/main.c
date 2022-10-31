@@ -51,9 +51,9 @@ UBYTE did_collide(GameCharacter* a, GameCharacter* b) {
 
 	return !(
 		(a->y + a->height) < b->y || // a_bottom < b_top
-		a->y > (b->y + b->height) || // a_top > b_bottom
-		(a->x + a->width) < b->x ||  // a_right < b_left
-		a->x > (b->x + b->width)     // a_left > b_right
+		a->y > (b->y + b->height) || // a_top    > b_bottom
+		(a->x + a->width) < b->x ||  // a_right  < b_left
+		a->x > (b->x + b->width)     // a_left   > b_right
 	);
 }
 
@@ -99,6 +99,45 @@ void reset_game() {
 	reset_player();
 
 	render_game_character(&player);
+}
+
+void resolve_collision(GameCharacter* a, GameCharacter* b) {
+	INT8 a_mid_x = a->x + a->half_width;
+	INT8 a_mid_y = a->y + a->half_height;
+	INT8 b_mid_x = b->x + b->half_width;
+	INT8 b_mid_y = b->y + b->half_height;
+	INT8 dx = (b_mid_x - a_mid_x) / b->half_width;
+	INT8 dy = (b_mid_y - a_mid_y) / b->half_height;
+	INT8 absDX = ABS(dx);
+	INT8 absDY = ABS(dy);
+
+	if (a->last_collided_with == b || b->last_collided_with == a) {
+		return;
+	}
+	
+
+	if (absDX > absDY) { // collision is on the sides
+		// if (dx < 0) { // a is moving left
+		// 	a->x = b->x + b->width + 1u;
+		// } else { // a is moving right
+		// 	a->x = b->x - a->width - 1u;
+		// }
+
+		a->velocity_x = -a->velocity_x;
+		b->velocity_x = -b->velocity_x;
+	} else { // collision is on the top or bottom
+		// if (dy < 0) { // a is moving down
+		// 	a->y = b->y + b->height + 1u;
+		// } else { // a is moving up
+		// 	a->y = b->y - a->height - 1u;
+		// }
+
+		a->velocity_y = -a->velocity_y;
+		b->velocity_y = -b->velocity_y;
+	}
+
+	a->last_collided_with = b;
+	b->last_collided_with = a;
 }
 
 void main() {
@@ -198,6 +237,8 @@ void main() {
 				continue;
 			}
 
+			scroll_bkg(player.velocity_x, player.velocity_y);
+
 			for (i = 0u; i < BULLET_COUNT; i++) {
 				if (!bullets[i].is_destroyed) {
 					update_bullet(&bullets[i]);
@@ -208,17 +249,9 @@ void main() {
 
 			for (i = 0u; i < ENEMY_COUNT; i++) {
 				if (enemies[i].is_destroyed) {
-					continue;
-				}
-
-				update_enemy(&enemies[i]);
-			}
-
-			scroll_bkg(player.velocity_x, player.velocity_y);
-
-			for (i = 0u; i < ENEMY_COUNT; i++) {
-				if (enemies[i].is_destroyed) {
 					reset_enemy(&enemies[i]);
+				} else {
+					update_enemy(&enemies[i]);
 				}
 
 				render_game_character(&enemies[i]);
@@ -227,19 +260,6 @@ void main() {
 			for (i = 0u; i < ENEMY_COUNT; i++) {
 				if (enemies[i].is_destroyed) {
 					continue;
-				}
-
-				for (j = 0u; j < BULLET_COUNT; j++) {
-					if (!bullets[j].is_destroyed) {
-						if (did_collide(&bullets[j], &enemies[i])) {
-							destroy_game_character(&bullets[j]);
-							destroy_enemy(&enemies[i]);
-							play_sound_explosion();
-							score += 1u;
-							update_score();
-							break;
-						}
-					}
 				}
 
 				if (did_collide(&player, &enemies[i])) {
@@ -252,10 +272,25 @@ void main() {
 						start_destroying_player();
 						set_win_tiles(0u, 0u, 11u, 1u, reset_prompt_map);
 					}
-				}
+				} else {
+					for (j = 0u; j < BULLET_COUNT; j++) {
+						if (did_collide(&bullets[j], &enemies[i])) {
+							destroy_game_character(&bullets[j]);
+							destroy_enemy(&enemies[i]);
+							play_sound_explosion();
+							score += 1u;
+							update_score();
+							break;
+						}
+					}
 
-				if (enemies[i].is_destroyed) {
-					reset_enemy(&enemies[i]);
+					for (j = 0u; j < ENEMY_COUNT; j++) {
+						if (i < j && did_collide(&enemies[j], &enemies[i])) {
+						
+
+							resolve_collision(&enemies[j], &enemies[i]);
+						}
+					}
 				}
 			}
 		}

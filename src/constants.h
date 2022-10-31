@@ -15,15 +15,15 @@
 #define WORLD_MAX_X 176u
 #define WORLD_MAX_Y 168u
 
-#define MAX_VELOCITY 4
+#define MAX_VELOCITY 6
 #define ACCELERATION 1
 
-#define MAX_HEALTH 3u
-#define FIRE_RATE 20u
-#define ANIMATION_RATE 4u
-#define BULLET_COUNT 2u
-#define ENEMY_COUNT 6u
-#define SMALL_ENEMY_COUNT 2u
+#define MAX_HEALTH 5u
+#define FIRE_RATE 10u
+#define ANIMATION_RATE 5u
+#define BULLET_COUNT 3u
+#define ENEMY_COUNT 7u
+#define SMALL_ENEMY_COUNT 3u
 
 #define BACKGROUND_DATA_TILES 12u
 #define FONT_DATA_TILES 37u
