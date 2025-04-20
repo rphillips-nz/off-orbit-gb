@@ -1,6 +1,6 @@
 #include <gb/gb.h>
 
-#include "sound/gbt_player.h"
+#include "sound/hUGEDriver.h"
 #include "sound/sound.h"
 #include "constants.h"
 #include "game-character.h"
@@ -16,7 +16,7 @@
 #include "graphics/title-data.c"
 #include "graphics/title-map.c"
 
-extern const unsigned char* song_Data[];
+extern const hUGESong_t music;
 
 GameCharacter player;
 GameCharacter bullets[BULLET_COUNT];
@@ -27,7 +27,7 @@ UBYTE next_sprite_index;
 UBYTE score;
 UBYTE health;
 
-const UINT8 reset_prompt_map[11u] = {
+const uint8_t reset_prompt_map[11u] = {
 	BACKGROUND_DATA_TILES + 26u, // P
 	BACKGROUND_DATA_TILES + 28u, // R
 	BACKGROUND_DATA_TILES + 15u, // E
@@ -41,8 +41,8 @@ const UINT8 reset_prompt_map[11u] = {
 	BACKGROUND_DATA_TILES + 30u  // T
 };
 
-const UINT8 heart_map[1u] = {BACKGROUND_DATA_TILES}; // The heart tile
-const UINT8 blank_map[1u] = {0u};
+const uint8_t heart_map[1u] = {BACKGROUND_DATA_TILES}; // The heart tile
+const uint8_t blank_map[1u] = {0u};
 
 UBYTE did_collide(GameCharacter* a, GameCharacter* b) {
 	if (a->is_destroyed || b->is_destroyed || a->is_destroying || b->is_destroying) {
@@ -57,10 +57,10 @@ UBYTE did_collide(GameCharacter* a, GameCharacter* b) {
 	);
 }
 
-void update_score() {
-	UINT8 digit_map[1u];
+void update_score(void) {
+	uint8_t digit_map[1u];
 	UBYTE score_iterator = score;
-	INT8 digit_render_count = 0u;
+	int8_t digit_render_count = 0u;
 
 	do {
 		digit_map[0u] = score_iterator % 10u + BACKGROUND_DATA_TILES + 1u;
@@ -70,7 +70,7 @@ void update_score() {
 	} while (score_iterator > 0u);
 }
 
-void update_health() {
+void update_health(void) {
 	UBYTE i;
 
 	for (i = 0u; i < MAX_HEALTH; i++) {
@@ -78,7 +78,7 @@ void update_health() {
 	}
 }
 
-void reset_game() {
+void reset_game(void) {
 	UBYTE i;
 
 	game_running = 1u;
@@ -89,7 +89,7 @@ void reset_game() {
 		reset_enemy(&enemies[i]);
 	}
 
-	for (i = 0u; i < 20u; i++) {		
+	for (i = 0u; i < 20u; i++) {
 		set_win_tiles(i, 0, 1u, 1u, blank_map);
 	}
 
@@ -101,12 +101,13 @@ void reset_game() {
 	render_game_character(&player);
 }
 
-void main() {
+void main(void) {
 	UBYTE is_render_frame = 0;
-	UINT8 jpad = 0u, j, i;
+	uint8_t jpad = 0u, j, i;
 
 	BGP_REG = 0x00; // Start palette all white for fade_in_white()
 
+	hUGE_init(&music);
 	init_sound();
 	disable_interrupts();
 
@@ -116,7 +117,7 @@ void main() {
 	move_win(7u, 136u);
 
 	for (j = 0u; j < 32u; j++) {
-		for (i = 0u; i < 32u; i++) {		
+		for (i = 0u; i < 32u; i++) {
 			set_win_tiles(i, j, 1u, 1u, blank_map);
 			set_bkg_tiles(i, j, 1u, 1u, blank_map);
 		}
@@ -130,9 +131,6 @@ void main() {
 	SHOW_WIN;
 	DISPLAY_ON;
 
-	gbt_play(song_Data, 2, 7);
-	gbt_loop(1);
-
 	set_interrupts(VBL_IFLAG);
 
 	enable_interrupts();
@@ -140,14 +138,12 @@ void main() {
 
 	while (1) {
 		wait_vbl_done();
+		hUGE_dosound();
 
 		if (joypad() & J_START) {
-			gbt_stop();
 			wait_vbl_done();
 			break;
 		}
-		
-		gbt_update();
 	}
 
 	init_sound();

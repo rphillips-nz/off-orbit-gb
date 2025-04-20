@@ -1,8 +1,6 @@
 #ifndef _OO_ENEMY_H_
 #define _OO_ENEMY_H_
 
-
-
 #include <gb/gb.h>
 #include "game-character.h"
 
@@ -17,7 +15,5 @@ void update_enemy(GameCharacter* enemy);
 void reset_enemy(GameCharacter* enemy);
 
 void destroy_enemy(GameCharacter* enemy);
-
-
 
 #endif

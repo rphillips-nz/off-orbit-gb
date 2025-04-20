@@ -1,8 +1,6 @@
 #ifndef _OO_CONSTANTS_H_
 #define _OO_CONSTANTS_H_
 
-
-
 // Top corner of the screen is actually (8, 16) rather than (0, 0)
 #define SCREEN_MIN_X 8u
 #define SCREEN_MIN_Y 16u
@@ -28,10 +26,8 @@
 #define BACKGROUND_DATA_TILES 12u
 #define FONT_DATA_TILES 37u
 
-#define ABS(x)    (((x) < 0) ? -(x) : (x))
+#define ABS(x) (((x) < 0) ? -(x) : (x))
 #define MAX(a, b) ((a < b) ? (b) : (a))
 #define MIN(a, b) ((a < b) ? (a) : (b))
-
-
 
 #endif

@@ -2,7 +2,7 @@
 
 UBYTE fade_index;
 
-void fade_out() {
+void fade_out(void) {
 	for (fade_index = 0; fade_index < 3; fade_index ++) {
 		switch (fade_index) {
 			case 0:
@@ -22,7 +22,7 @@ void fade_out() {
 	}
 }
 
-void fade_in() {
+void fade_in(void) {
 	for (fade_index = 0; fade_index < 3; fade_index++) {
 		switch (fade_index) {
 			case 0:
@@ -42,7 +42,7 @@ void fade_in() {
 	}
 }
 
-void fade_out_white() {
+void fade_out_white(void) {
 	for (fade_index = 0; fade_index < 3; fade_index ++) {
 		switch (fade_index) {
 			case 0:
@@ -62,7 +62,7 @@ void fade_out_white() {
 	}
 }
 
-void fade_in_white() {
+void fade_in_white(void) {
 	for (fade_index = 0; fade_index < 3; fade_index++) {
 		switch (fade_index) {
 			case 0:

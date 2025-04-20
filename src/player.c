@@ -7,7 +7,7 @@ extern GameCharacter player;
 extern UBYTE next_sprite_index;
 extern UBYTE game_running;
 
-void reset_player() {
+void reset_player(void) {
 	player.x = 80u;
 	player.y = 80u;
 	player.velocity_x = 0;
@@ -18,7 +18,7 @@ void reset_player() {
 	animate_player(J_UP);
 }
 
-void set_up_player() {
+void set_up_player(void) {
 	reset_player();
 	player.width = 16u;
 	player.height = 16u;
@@ -36,7 +36,7 @@ void set_up_player() {
 	player.sprite_ids[3u] = next_sprite_index++;
 }
 
-void turn_player(UINT8 jpad) {
+void turn_player(uint8_t jpad) {
 	if (jpad & J_LEFT) {
 		player.direction = jpad;
 		set_sprite_tile(player.sprite_ids[0u], 12u);
@@ -70,11 +70,11 @@ void turn_player(UINT8 jpad) {
 	}
 }
 
-void destroy_player() {
+void destroy_player(void) {
 	player.is_destroyed = 1u;
 	player.is_destroying = 0u;
 	player.frame = 0u;
-	
+
 	// Hides player sprites
 	player.x = 0u;
 	player.y = 0u;
@@ -85,11 +85,11 @@ void destroy_player() {
 	game_running = 0u;
 }
 
-void start_destroying_player() {
+void start_destroying_player(void) {
 	player.is_destroying = 1u;
 }
 
-void animate_player(UINT8 jpad) {
+void animate_player(uint8_t jpad) {
 	switch (player.frame) {
 		case 0u:
 			turn_player(jpad);
@@ -124,11 +124,11 @@ void animate_player(UINT8 jpad) {
 	}
 }
 
-void update_player(UINT8 jpad) {
+void update_player(uint8_t jpad) {
 	if (player.is_destroying && (sys_time - player.last_animated_at > ANIMATION_RATE)) {
 		player.frame++;
 		player.last_animated_at = sys_time;
 	}
-	
+
 	animate_player(jpad);
 }

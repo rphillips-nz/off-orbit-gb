@@ -7,7 +7,7 @@ extern GameCharacter player;
 extern UBYTE next_sprite_index;
 extern GameCharacter bullets[BULLET_COUNT];
 
-UINT16 time_last_fired;
+uint16_t time_last_fired;
 
 void set_up_bullet(GameCharacter* bullet) {
 	bullet->x = 0u;
@@ -33,10 +33,10 @@ void update_bullet(GameCharacter* bullet) {
 	}
 }
 
-void fire_bullet(UINT8 direction) {
+void fire_bullet(uint8_t direction) {
 	GameCharacter* bullet;
 	UBYTE i, valid_bullet_index = BULLET_COUNT;
-	INT8 player_mid_x, player_mid_y;
+	int8_t player_mid_x, player_mid_y;
 
 	for (i = 0u; i < BULLET_COUNT; i++) {
 		if (bullets[i].is_destroyed) {
@@ -74,7 +74,7 @@ void fire_bullet(UINT8 direction) {
 
 	if (direction & J_UP) {
 		player.velocity_y = MIN(player.velocity_y + ACCELERATION, MAX_VELOCITY);
-		
+
 		if (player.velocity_y < 0) {
 			bullet->velocity_y = player.velocity_y - 5;
 		} else {
@@ -82,7 +82,7 @@ void fire_bullet(UINT8 direction) {
 		}
 	} else if (direction & J_DOWN) {
 		player.velocity_y = MAX(player.velocity_y - ACCELERATION, -MAX_VELOCITY);
-		
+
 		if (player.velocity_y > 0) {
 			bullet->velocity_y = player.velocity_y + 5;
 		} else {
