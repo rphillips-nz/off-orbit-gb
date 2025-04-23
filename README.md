@@ -1,10 +1,10 @@
-# off-orbit-gb
+# Off Orbit GB
 
-Off Orbit reborn for the original Nintendo Gameboy. Originally a wildly unpopular iOS game, Off Orbit is an asteroids style game where firing the ship's weapon also moves you in the opposite direction.
+Off Orbit reborn for the original Nintendo Gameboy. Originally a *wildly* unpopular iOS game, Off Orbit is an asteroids style game where firing the ship's weapon also moves you in the opposite direction.
 
 ![Screenshot](/screenshot.png)
 
-## Development
+## 🧪 Development
 
 This game was built on Linux (Windows WSL) with [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020) and the following tools/libraries:
 
@@ -15,7 +15,7 @@ This game was built on Linux (Windows WSL) with [GBDK-2020](https://github.com/g
 * [GBMB](http://www.devrs.com/gb/hmgd/gbmb.html) for creating tilemaps and exporting them to `.c` files.
 * [Pyxel Edit](https://pyxeledit.com/) to edit composed sprites easier (split pasted into GBTD).
 
-## Build
+## 🔨 Build
 
 1. Download the latest release of [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020) (v4.3.0 at this time).
 2. Extract to a sibling folder of this project called `gbdk`.
@@ -25,12 +25,12 @@ This game was built on Linux (Windows WSL) with [GBDK-2020](https://github.com/g
    └── gbdk
    ```
 
-3. Run this from the base directory to build `dist/off-orbit.gb`:
+3. Run this script from the base directory to create `dist/off-orbit.gb`:
 
    ```bash
    ./bin/build.sh
    ```
 
-## Run
+## 🚀 Run
 
-Drag the `dist/off-orbit.gb` file into BGB to test it out.
+Drag the built `dist/off-orbit.gb` file into BGB to test it out.
