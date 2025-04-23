@@ -1,40 +1,38 @@
 # off-orbit-gb
 
-Off Orbit reborn for the original Nintendo Gameboy. An asteroids style game where firing the ship's weapon also moves you in the opposite direction.
+Off Orbit reborn for the original Nintendo Gameboy. Originally a wildly unpopular iOS game, Off Orbit is an asteroids style game where firing the ship's weapon also moves you in the opposite direction.
 
-## Development Prerequisites
+![Screenshot](screenshot.md)
+
+## Development
 
 This game was built on Linux/Windows WSL with [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020).
 
-> [This tutorial series](https://www.youtube.com/watch?v=HIsWR_jLdwo) created by [GamingMonsters](https://www.youtube.com/channel/UCMMhSfBStEti-Lqzs30HYWw) is a good learning resource for GBDK.
+### Tools and Libraries
 
-### gbdk-2020
+* [BGB](https://bgb.bircd.org/) emulator for testing the built `dist/off-orbit.gb` file
+* [hUGETracker](https://github.com/SuperDisk/hUGETracker) for creating `src/sound/music.c` by exporting `raw/music.uge` to GBDK format.
+* [hUGEDriver](https://github.com/SuperDisk/hUGEDriver) for playing `src/sound/music.c` in game.
+* [GBTD](http://www.devrs.com/gb/hmgd/gbtd.html) for creating tiles and exporting the data to `.c` files.
+* [GBMB](http://www.devrs.com/gb/hmgd/gbmb.html) for creating tilemaps and exporting them to `.c` files.
+* [Pyxel Edit](https://pyxeledit.com/) to edit composed sprites easier (split pasted into GBTD).
 
-1. Download the latest release (v4.3.0 at this time).
+## Build
+
+1. Download the latest release of [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020) (v4.3.0 at this time).
 2. Extract to a sibling folder of this project called `gbdk`.
 
    ```
-	 ├── off-orbit-gb
+   ├── off-orbit-gb
    └── gbdk
-	 ```
+   ```
 
-### Other Tools
-
-* [BGB](https://bgb.bircd.org/) emulator for testing the built `off-orbit.gb` file
-* [GBTD](http://www.devrs.com/gb/hmgd/gbtd.html) for creating tiles and exporting the data to `.c` files
-* [GBMB](http://www.devrs.com/gb/hmgd/gbmb.html) for creating tilemaps and exporting them to `.c` files
-* [Pyxel Edit](https://pyxeledit.com/) to edit composed sprites easier (split pasted into GBTD)
-
-## Music
-
-The `src/sound/music.c` file is created from exporting `raw/music.uge` to GBDK from [hUGETracker](https://github.com/SuperDisk/hUGETracker). It's run in game with [hUGEDriver](https://github.com/SuperDisk/hUGEDriver).
-
-## Building
-
-Run this to build `dist/off-orbit.gb` with SDCC and gbdk-2020:
+Run this from the base directory to build `dist/off-orbit.gb`:
 
 ```
 $ ./bin/build.sh
 ```
 
-> Drag the `dist/off-orbit.gb` file into BGB to test it out.
+## Run
+
+Drag the `dist/off-orbit.gb` file into BGB to test it out.
