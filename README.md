@@ -6,9 +6,7 @@ Off Orbit reborn for the original Nintendo Gameboy. Originally a wildly unpopula
 
 ## Development
 
-This game was built on Linux/Windows WSL with [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020).
-
-### Tools and Libraries
+This game was built on Linux (Windows WSL) with [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020) and the following tools/libraries:
 
 * [BGB](https://bgb.bircd.org/) emulator for testing the built `dist/off-orbit.gb` file
 * [hUGETracker](https://github.com/SuperDisk/hUGETracker) for creating `src/sound/music.c` by exporting `raw/music.uge` to GBDK format.
