@@ -2,7 +2,7 @@
 
 Off Orbit reborn for the original Nintendo Gameboy. Originally a wildly unpopular iOS game, Off Orbit is an asteroids style game where firing the ship's weapon also moves you in the opposite direction.
 
-![Screenshot](screenshot.md)
+![Screenshot](/screenshot.md)
 
 ## Development
 
