@@ -25,11 +25,11 @@ This game was built on Linux (Windows WSL) with [GBDK-2020](https://github.com/g
    └── gbdk
    ```
 
-Run this from the base directory to build `dist/off-orbit.gb`:
+3. Run this from the base directory to build `dist/off-orbit.gb`:
 
-```
-$ ./bin/build.sh
-```
+   ```bash
+   ./bin/build.sh
+   ```
 
 ## Run
 
