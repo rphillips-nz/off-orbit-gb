@@ -1,6 +1,6 @@
 # Off Orbit GB
 
-Off Orbit reborn for the original Nintendo Gameboy. Originally a *wildly* unpopular iOS game, Off Orbit is an asteroids style game where firing the ship's weapon also moves you in the opposite direction.
+Off Orbit reborn[^1] for the original Nintendo Gameboy. Off Orbit is an asteroids style game where firing the ship's weapon also moves you in the opposite direction.
 
 ![Screenshot](/screenshot.png)
 
@@ -34,3 +34,5 @@ This game was built on Linux (Windows WSL) with [GBDK-2020](https://github.com/g
 ## 🚀 Run
 
 Drag the built `dist/off-orbit.gb` file into BGB to test it out.
+
+[^1]: Originally a *wildly* unpopular iOS game.
